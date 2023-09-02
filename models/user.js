@@ -11,7 +11,12 @@ const commonOptions = {
 const UserSchema = new mongoose.Schema({
   name: commonOptions,
   email: commonOptions,
-  password: commonOptions,
+  password: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 255,
+  },
   age: {
     type: Number,
     required: true,
