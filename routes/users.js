@@ -9,7 +9,6 @@ router.get("/:id", async (req, res) => {
   res.send(user);
 });
 
-
 // Create a new user
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
@@ -31,6 +30,25 @@ router.post("/", async (req, res) => {
 // Delete a user
 router.delete("/:id", async (req, res) => {
   const user = await User.findByIdAndRemove(req.params.id);
+  if (!user) return res.status(404).send("User not found");
+  res.send(user);
+});
+
+// Patch a user
+router.patch("/:id", async (req, res) => {
+  const { name, email, password, age, birthDay, profilePicture } = req.body;
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      name,
+      email,
+      password,
+      age,
+      birthDay,
+      profilePicture,
+    },
+    { new: true }
+  );
   if (!user) return res.status(404).send("User not found");
   res.send(user);
 });
