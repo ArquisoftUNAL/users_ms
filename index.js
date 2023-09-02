@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const express = require('express');
 const app = express();
 const users = require("./routes/users");
+const auth = require("./routes/auth");
 
 // Connect to mongodb
 mongoose
@@ -15,6 +16,7 @@ mongoose
 
 app.use(express.json());
 app.use("/api/users", users);
+app.use("/api/auth", auth);
 
 
 const port = 3000;
