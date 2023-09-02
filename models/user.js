@@ -20,7 +20,10 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  profilePicture: String,
+  profilePicture: {
+    type: String,
+    required: false,
+  },
 });
 
 const User = mongoose.model("User", UserSchema);

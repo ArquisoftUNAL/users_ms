@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const express = require('express');
 const app = express();
+const users = require("./routes/users");
 
 // Connect to mongodb
 mongoose
@@ -13,7 +14,7 @@ mongoose
   });
 
 app.use(express.json());
-
+app.use("/api/users", users);
 
 
 const port = 3000;
