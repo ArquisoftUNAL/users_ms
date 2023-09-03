@@ -18,13 +18,15 @@ router.post("/", async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(404).send("User already registered");
 
+  const { name, email, password, age, birthDay, profilePicture } = req.body;
+
   user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    age: req.body.age,
-    birthDay: req.body.birthDay,
-    profilePicture: req.body.profilePicture,
+    name,
+    email,
+    password,
+    age,
+    birthDay,
+    profilePicture,
   });
 
   const salt = await bcrypt.genSalt(10);
