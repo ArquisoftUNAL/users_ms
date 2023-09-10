@@ -8,9 +8,9 @@ module.exports = function (req, res, next) {
   const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
   req.user = decoded; // Store user data in the request object
 
-  const { _id, isAdmin } = req.user;
+  const { _id, _isAdmin } = req.user;
 
-  if (!isAdmin) {
+  if (!_isAdmin) {
     if (_id !== req.params.id) {
       return res.status(401).send("Access denied");
     }

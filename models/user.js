@@ -1,5 +1,7 @@
 const Joi = require("joi");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -35,6 +37,17 @@ const UserSchema = new mongoose.Schema({
     default: false,
   },
 });
+
+UserSchema.methods.generateAuthToken = function () {
+  const hoursToExpire = 12;
+  const tokenData = {
+    _id: this._id,
+    _isAdmin: this.isAdmin,
+    _exp: Math.floor((Date.now() + hoursToExpire * 3600 * 1000) / 1000), // Expiration time in hours
+  };
+
+  return jwt.sign(tokenData, process.env.JWT_PRIVATE_KEY);
+};
 
 const User = mongoose.model("User", UserSchema);
 

@@ -2,10 +2,9 @@ const { User, validate } = require("../models/user");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const _ = require("lodash");
-require("dotenv").config();
-const auth = require("../middleware/auth");
+
+const auth = require("../middleware/authorization");
 
 // Get user by id
 router.get("/:id", auth, async (req, res) => {
@@ -63,12 +62,8 @@ router.post("/", async (req, res) => {
 
   user = await user.save();
 
-  // Generate token and send user to the client. The default role is "user". One can create an admin user by changing the role to "admin" in the db.
-  const token = jwt.sign(
-    { _id: user._id, isAdmin: user.isAdmin },
-    process.env.JWT_PRIVATE_KEY
-  );
-  console.log("HOLAAA", user.isAdmin);
+  const token = user.generateAuthToken();
+
   // Remove password and __v from user object
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
   res.header("x-auth-token", token).send(userWithoutPassword);
