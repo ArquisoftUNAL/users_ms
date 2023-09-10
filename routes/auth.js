@@ -35,6 +35,15 @@ router.get("/token", async (req, res) => {
   return res.status(200).send(true);
 });
 
+// Logout user
+router.delete("/logout", async (req, res) => {
+  const authToken = await AuthToken.findOneAndDelete({
+    token: req.headers["x-auth-token"],
+  });
+  if (!authToken) return res.status(404).send("Token not found");
+  return res.status(200).send("User logged out");
+});
+
 const validate = (req) => {
   const schema = Joi.object({
     email: Joi.string().email().required(),
