@@ -1,4 +1,5 @@
-const { User, validate } = require("../models/user");
+const { User, validate: validateUser } = require("../models/user");
+const { AuthToken, validate: validateAuthToken } = require("../models/authToken");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
@@ -36,7 +37,7 @@ router.patch("/:id", auth, async (req, res) => {
 // Create a new user
 router.post("/", async (req, res) => {
   // Validate user with Joi and mongoose schema
-  const { error } = validate(req.body);
+  const { error } = validateUser(req.body);
   if (error) return res.status(404).send(error.details[0].message);
 
   let user = await User.findOne({ email: req.body.email });
@@ -62,11 +63,16 @@ router.post("/", async (req, res) => {
 
   user = await user.save();
 
-  const token = user.generateAuthToken();
+  const jwt = user.generateAuthToken();
+  const authToken = new AuthToken({
+    token: jwt,
+    userId: user._id,
+    expirationDate: jwt._expDate
+  });
 
   // Remove password and __v from user object
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
-  res.header("x-auth-token", token).send(userWithoutPassword);
+  res.header("x-auth-token", jwt).send(userWithoutPassword);
 });
 
 module.exports = router;

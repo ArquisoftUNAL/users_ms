@@ -40,10 +40,13 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.methods.generateAuthToken = function () {
   const hoursToExpire = 12;
+  console.log(Date.now());
+
   const tokenData = {
     _id: this._id,
     _isAdmin: this.isAdmin,
-    _exp: Math.floor((Date.now() + hoursToExpire * 3600 * 1000) / 1000), // Expiration time in hours
+    iat: Math.floor(Date.now() / 1000), // Issued at time (in seconds since Unix epoch)
+    exp: Math.floor(Date.now() / 1000) + 12 * 60 * 60, // Expiration time: 12 hours after iat
   };
 
   return jwt.sign(tokenData, process.env.JWT_PRIVATE_KEY);
