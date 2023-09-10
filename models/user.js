@@ -1,25 +1,28 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const commonOptions = {
-  type: String,
-  required: true,
-  minlength: 3,
-  maxlength: 30,
-};
-
 const UserSchema = new mongoose.Schema({
-  name: commonOptions,
-  email: commonOptions,
+  name: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 30,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    minlength: 5,
+    maxlength: 255,
+    match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  },
   password: {
     type: String,
     required: true,
     minlength: 3,
     maxlength: 255,
-  },
-  age: {
-    type: Number,
-    required: true,
+    // Regular expression for a secure password: at least one uppercase, one lowercase, and one digit.
+    match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
   },
   birthDay: {
     type: Date,
@@ -36,11 +39,14 @@ const User = mongoose.model("User", UserSchema);
 function validateUser(user) {
   const schema = Joi.object({
     name: Joi.string().min(3).max(30).required(),
-    email: Joi.string().min(3).max(30).required(),
-    password: Joi.string().min(3).max(30).required(),
-    age: Joi.number().required(),
+    email: Joi.string().min(5).max(255).email().required(),
+    password: Joi.string()
+      .min(3)
+      .max(255)
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/)
+      .required(),
     birthDay: Joi.date().required(),
-    profilePicture: Joi.string(),
+    profilePicture: Joi.string().allow(""),
   });
 
   return schema.validate(user);
