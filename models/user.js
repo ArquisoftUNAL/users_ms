@@ -21,8 +21,6 @@ const UserSchema = new mongoose.Schema({
     required: true,
     minlength: 3,
     maxlength: 255,
-    // Regular expression for a secure password: at least one uppercase, one lowercase, and one digit.
-    match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
   },
   birthDay: {
     type: Date,
@@ -31,6 +29,10 @@ const UserSchema = new mongoose.Schema({
   profilePicture: {
     type: String,
     required: false,
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
   },
 });
 

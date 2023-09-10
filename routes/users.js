@@ -8,9 +8,26 @@ require("dotenv").config();
 
 // Get user by id
 router.get("/:id", async (req, res) => {
-  const user = await User.findById(req.params.id);
+  // Check if user is authorized
+  const token = req.header("x-auth-token");
+  if (!token) return res.status(401).send("Access denied 1");
+
+  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+  const { _id, isAdmin } = decoded;
+
+  if (!isAdmin) {
+    if (_id !== req.params.id) {
+      return res.status(401).send("Access denied 2");
+    }
+  }
+
+  const user = await User.findById(_id);
+
   if (!user) return res.status(404).send("User not found");
-  res.send(user);
+
+  // Remove password and __v from user object
+  const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
+  res.send(userWithoutPassword);
 });
 
 // Create a new user
@@ -30,6 +47,7 @@ router.post("/", async (req, res) => {
     password,
     birthDay,
     profilePicture,
+    isAdmin: false,
   });
 
   try {
@@ -41,8 +59,12 @@ router.post("/", async (req, res) => {
 
   user = await user.save();
 
-  // Generate token and send user to the client
-  const token = jwt.sign({ _id: user._id }, process.env.JWT_PRIVATE_KEY);
+  // Generate token and send user to the client. The default role is "user". One can create an admin user by changing the role to "admin" in the db.
+  const token = jwt.sign(
+    { _id: user._id, isAdmin: user.isAdmin },
+    process.env.JWT_PRIVATE_KEY
+  );
+  console.log("HOLAAA", user.isAdmin);
   // Remove password and __v from user object
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
   res.header("x-auth-token", token).send(userWithoutPassword);
