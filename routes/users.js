@@ -25,7 +25,14 @@ router.delete("/:id", auth, async (req, res) => {
   res.send(user);
 });
 
-
+// Patch a user
+router.patch("/:id", auth, async (req, res) => {
+  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  if (!user) return res.status(404).send("User not found");
+  res.send(user);
+});
 
 // Create a new user
 router.post("/", async (req, res) => {
@@ -65,26 +72,6 @@ router.post("/", async (req, res) => {
   // Remove password and __v from user object
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
   res.header("x-auth-token", token).send(userWithoutPassword);
-});
-
-
-
-// Patch a user
-router.patch("/:id", async (req, res) => {
-  const { name, email, password, birthDay, profilePicture } = req.body;
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    {
-      name,
-      email,
-      password,
-      birthDay,
-      profilePicture,
-    },
-    { new: true }
-  );
-  if (!user) return res.status(404).send("User not found");
-  res.send(user);
 });
 
 module.exports = router;
