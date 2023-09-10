@@ -2,7 +2,7 @@ const Joi = require("joi");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const authToken = new mongoose.Schema({
+const authSchema = new mongoose.Schema({
   token: {
     type: String,
     required: true,
@@ -16,13 +16,9 @@ const authToken = new mongoose.Schema({
     minlength: 3,
     maxlength: 255,
   },
-  expirationDate: {
-    type: Date,
-    required: true,
-  },
 });
 
-const AuthToken = mongoose.model("AuthToken", authToken);
+const AuthToken = mongoose.model("AuthToken", authSchema);
 
 function validateAuthToken(authToken) {
   const schema = Joi.object({

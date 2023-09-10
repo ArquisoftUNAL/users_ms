@@ -2,6 +2,10 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const {
+  AuthToken,
+  validate: validateAuthToken,
+} = require("../models/authToken");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -38,18 +42,26 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-UserSchema.methods.generateAuthToken = function () {
+UserSchema.methods.generateAuthToken = function (userId) {
   const hoursToExpire = 12;
-  console.log(Date.now());
 
   const tokenData = {
     _id: this._id,
     _isAdmin: this.isAdmin,
     iat: Math.floor(Date.now() / 1000), // Issued at time (in seconds since Unix epoch)
-    exp: Math.floor(Date.now() / 1000) + 12 * 60 * 60, // Expiration time: 12 hours after iat
+    exp: Math.floor(Date.now() / 1000) + hoursToExpire * 60 * 60, // Expiration time: 12 hours after iat
   };
 
-  return jwt.sign(tokenData, process.env.JWT_PRIVATE_KEY);
+  const token = jwt.sign(tokenData, process.env.JWT_PRIVATE_KEY);
+
+  const authToken = new AuthToken({ token, userId });
+
+  console.log("authToken", authToken);
+  console.log("token", token);
+
+  authToken.save();
+
+  return token;
 };
 
 const User = mongoose.model("User", UserSchema);

@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 
 // Validate login
 router.post("/login", async (req, res) => {
+  // Structure validation
   const { error } = validate(req.body);
   if (error) return res.status(404).send(error.details[0].message);
 
@@ -18,16 +19,17 @@ router.post("/login", async (req, res) => {
   if (!validPassword)
     return res.status(404).send("Invalid email or password 2");
 
-  // Generate token
-  const token = jwt.sign({ _id: user._id }, "jwtPrivateKey");
+  // Generate and save token
+  const jwt = user.generateAuthToken(user._id);
 
-  res.send(token);
+  // Send token to client
+  res.send(jwt);
 });
 
 const validate = (req) => {
   const schema = Joi.object({
-    email: Joi.string().min(3).max(30).required(),
-    password: Joi.string().min(3).max(30).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(3).max(255).required(),
   });
 
   return schema.validate(req);
