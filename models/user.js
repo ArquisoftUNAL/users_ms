@@ -53,14 +53,8 @@ UserSchema.methods.generateAuthToken = function (userId) {
   };
 
   const token = jwt.sign(tokenData, process.env.JWT_PRIVATE_KEY);
-
   const authToken = new AuthToken({ token, userId });
-
-  console.log("authToken", authToken);
-  console.log("token", token);
-
   authToken.save();
-
   return token;
 };
 

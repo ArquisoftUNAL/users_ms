@@ -1,4 +1,5 @@
 const { User } = require("../models/user");
+const { AuthToken } = require("../models/authToken");
 const express = require("express");
 const Joi = require("joi");
 const router = express.Router();
@@ -12,18 +13,26 @@ router.post("/login", async (req, res) => {
   if (error) return res.status(404).send(error.details[0].message);
 
   let user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(404).send("Invalid email or password 1");
+  if (!user) return res.status(404).send("Invalid email or password");
 
   // Compare password
   const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword)
-    return res.status(404).send("Invalid email or password 2");
+  if (!validPassword) return res.status(404).send("Invalid email or password");
 
   // Generate and save token
   const jwt = user.generateAuthToken(user._id);
 
   // Send token to client
   res.send(jwt);
+});
+
+// Validate token
+router.get("/token", async (req, res) => {
+  // Check if token exists
+  const token = req.headers["x-auth-token"];
+  if (!token) return res.status(404).send("Token not found in header");
+  if (!(await AuthToken.findOne({ token }))) return res.status(404).send(false);
+  return res.status(200).send(true);
 });
 
 const validate = (req) => {
