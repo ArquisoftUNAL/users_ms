@@ -5,23 +5,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 require("dotenv").config();
+const auth = require("../middleware/auth");
 
 // Get user by id
-router.get("/:id", async (req, res) => {
-  // Check if user is authorized
-  const token = req.header("x-auth-token");
-  if (!token) return res.status(401).send("Access denied 1");
-
-  const decoded = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
-  const { _id, isAdmin } = decoded;
-
-  if (!isAdmin) {
-    if (_id !== req.params.id) {
-      return res.status(401).send("Access denied 2");
-    }
-  }
-
-  const user = await User.findById(_id);
+router.get("/:id", auth, async (req, res) => {
+  const user = await User.findById(req.params.id);
 
   if (!user) return res.status(404).send("User not found");
 
@@ -29,6 +17,15 @@ router.get("/:id", async (req, res) => {
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
   res.send(userWithoutPassword);
 });
+
+// Delete a user
+router.delete("/:id", auth, async (req, res) => {
+  const user = await User.findByIdAndRemove(req.params.id);
+  if (!user) return res.status(404).send("User not found");
+  res.send(user);
+});
+
+
 
 // Create a new user
 router.post("/", async (req, res) => {
@@ -70,12 +67,7 @@ router.post("/", async (req, res) => {
   res.header("x-auth-token", token).send(userWithoutPassword);
 });
 
-// Delete a user
-router.delete("/:id", async (req, res) => {
-  const user = await User.findByIdAndRemove(req.params.id);
-  if (!user) return res.status(404).send("User not found");
-  res.send(user);
-});
+
 
 // Patch a user
 router.patch("/:id", async (req, res) => {
