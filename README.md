@@ -1,4 +1,14 @@
 Welcome to the Users microservice. This is one of the core microservices of the app.
+# Running the application
+
+To run the application, you will need to have Docker installed.
+
+Once you have Docker installed, you can clone the repository and run the following commands: <code class="language-shell">
+  docker-compose build
+  docker-compose up
+</code>
+
+
 
 # API Users Endpoints
 
