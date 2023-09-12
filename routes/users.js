@@ -8,6 +8,7 @@ const auth = require("../middleware/authorization");
 
 // Get user by id
 router.get("/:id", auth, async (req, res) => {
+  
   const user = await User.findById(req.params.id);
 
   if (!user) return res.status(404).send("User not found");
@@ -35,6 +36,7 @@ router.patch("/:id", auth, async (req, res) => {
 
 // Create a new user
 router.post("/", async (req, res) => {
+  console.log(req.body);
   // Validate user with Joi and mongoose schema
   const { error } = validate(req.body);
   if (error) return res.status(404).send(error.details[0].message);
@@ -42,14 +44,13 @@ router.post("/", async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(404).send("User already registered");
 
-  const { name, email, password, birthDay, profilePicture } = req.body;
+  const { name, email, password, birthDay } = req.body;
 
   user = new User({
     name,
     email,
     password,
     birthDay,
-    profilePicture,
     isAdmin: false,
   });
 

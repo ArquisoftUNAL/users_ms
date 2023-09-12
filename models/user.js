@@ -32,10 +32,6 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  profilePicture: {
-    type: String,
-    required: false,
-  },
   isAdmin: {
     type: Boolean,
     default: false,
@@ -70,7 +66,6 @@ function validateUser(user) {
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/)
       .required(),
     birthDay: Joi.date().required(),
-    profilePicture: Joi.string().allow(""),
   });
 
   return schema.validate(user);
