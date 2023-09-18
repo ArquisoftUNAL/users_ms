@@ -6,7 +6,7 @@ const auth = require("./routes/auth");
 
 // Connect to mongodb
 mongoose
-  .connect("mongodb://mongodb-container:27017/users", {
+  .connect("mongodb://habitus_users_db:27017/users", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
