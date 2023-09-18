@@ -11,11 +11,14 @@ Once you have Docker installed, you can clone the repository and run the followi
 
 
 # API Users Endpoints
+There's a postman .json file included in the examples folder. Feel free to give it a look to better understand this endpoints.
+
+Please note that all the routes with `/me` require a valid JWT in the header (which is called `x-auth-token`)
 
 The following API endpoints for managing the users are available:
 
-* `GET /api/users/:user_id`
-  * Description: Get the user with the given ID.
+* `GET /api/users/me`
+  * Description: Get the current user info.
   * HTTP Response: 200 OK
   * Caller header:
     * `x-auth-token`: The JWT token for the logged in user.
@@ -24,7 +27,7 @@ The following API endpoints for managing the users are available:
     * The JSON representation of the user, including the user ID and role.
 
 * `POST /api/users`
-  * Description: Create a new user and get the JWT token for logging in.
+  * Descriptiser on: Create a new uand get the JWT token for logging in.
   * HTTP Response: 201 CREATED
   * Caller body:
     * `name`: The user's name.
@@ -35,8 +38,8 @@ The following API endpoints for managing the users are available:
     * `x-auth-token`: The JWT token for the newly created user.
   * Response body: Empty
 
-* `PATCH /api/users/:user_id`
-  * Description: Partially modify a specific user.
+* `PATCH /api/users/me`
+  * Description: Update the current user.
   * HTTP Response: 200 OK
   * Caller header:
     * `x-auth-token`: The JWT token for the logged in user.
@@ -45,9 +48,9 @@ The following API endpoints for managing the users are available:
   * Response header: Empty
   * Response body:
     * The JSON representation of the updated user.
-* `DELETE /api/users/:user_id`
-  * Description: Delete a specific user.
-  * HTTP Response: 200 OK
+* `DELETE /api/users/me`
+  * Description: Delete current user.
+  * HTTP Response: 204 NO CONTENT
   * Caller header:
     * `x-auth-token`: The JWT token for the logged in user.
   * Caller body: Empty
@@ -61,7 +64,7 @@ The following API endpoints for managing the users are available:
   * Caller body:
     * `email`: The user's email address.
     * `password`: The user's password.
-  * Response body: The JWT token.
+  * Response header: The JWT token.
 
 * `GET auth/token`
   * Description: Validate JWT token.
@@ -72,7 +75,7 @@ The following API endpoints for managing the users are available:
 
 * `DELETE auth/logout`
   * Description: Logout the user and invalidate the JWT token.
-  * HTTP Response: 200 OK
+  * HTTP Response: 204 NO CONTENT
   * Caller header:
     * `x-auth-token`: The JWT token.
   * Response body: `User logged out`.
