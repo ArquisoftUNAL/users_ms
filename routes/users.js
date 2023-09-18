@@ -22,7 +22,7 @@ router.get("/me", auth, async (req, res) => {
 router.delete("/me", auth, async (req, res) => {
   const user = await User.findByIdAndRemove(req.user._id);
   if (!user) return res.status(404).json({ message: "User not found" });
-  res.json(user);
+  res.json(user).status(204);
 });
 
 // Patch current user

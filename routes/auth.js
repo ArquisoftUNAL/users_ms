@@ -44,7 +44,7 @@ router.delete("/logout", async (req, res) => {
     token: req.headers["x-auth-token"],
   });
   if (!authToken) return res.status(404).json({ message: "Token not found" });
-  return res.status(200).json({ message: "User logged out" });
+  return res.status(204).json({ message: "User logged out" });
 });
 
 const validate = (req) => {
