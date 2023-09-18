@@ -1,0 +1,99 @@
+{
+	"info": {
+		"_postman_id": "e8c7f976-39ac-4414-a39a-c013317fcfcb",
+		"name": "users_ms",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26426714"
+	},
+	"item": [
+		{
+			"name": "Create a new user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Mark\",\n    \"email\": \"mark@mail.com\",\n    \"password\": \"acdD123a\",\n    \"birthDay\": \"1998-12-12\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/api/users/"
+			},
+			"response": []
+		},
+		{
+			"name": "Get current user info",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Delete current user",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "{{given_jwt}}",
+						"type": "text"
+					}
+				],
+				"url": "http://localhost:3000/users/me"
+			},
+			"response": []
+		},
+		{
+			"name": "Update user data",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"mark12@mail.com\",\n    \"password\": \"acdD123a\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/auth/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Validate Token",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "given_jwt",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTA3YzYzMjI5ZDdlMTFiY2Y2MGE1M2EiLCJfaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTY5NTAwODMwNywiZXhwIjoxNjk1MDUxNTA3fQ.AyMrr8dtrtHOah3nXDU6zx50m1EBlMh4pohaNATvqKQ"
+		}
+	]
+}

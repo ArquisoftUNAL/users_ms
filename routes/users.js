@@ -9,21 +9,20 @@ const auth = require("../middleware/authorization");
 
 // Get current user info
 router.get("/me", auth, async (req, res) => {
-
   const user = await User.findById(req.user._id);
 
-  if (!user) return res.status(404).send("User not found");
+  if (!user) return res.status(404).json({ message: "User not found" });
 
   // Remove password and __v from user object
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
-  res.send(userWithoutPassword);
+  res.json(userWithoutPassword);
 });
 
 // Delete current user
 router.delete("/me", auth, async (req, res) => {
   const user = await User.findByIdAndRemove(req.user._id);
-  if (!user) return res.status(404).send("User not found");
-  res.send(user);
+  if (!user) return res.status(404).json({ message: "User not found" });
+  res.json(user);
 });
 
 // Patch current user
@@ -31,19 +30,18 @@ router.patch("/me", auth, async (req, res) => {
   const user = await User.findByIdAndUpdate(req.user._id, req.body, {
     new: true,
   });
-  if (!user) return res.status(404).send("User not found");
-  res.send(user);
+  if (!user) return res.status(404).json({ message: "User not found" });
+  res.json(user);
 });
 
 // Create a new user
 router.post("", async (req, res) => {
-  console.log(req.body);
   // Validate user with Joi and mongoose schema
   const { error } = validate(req.body);
-  if (error) return res.status(404).send(error.details[0].message);
+  if (error) return res.status(404).json({ message: error.details[0].message });
 
   let user = await User.findOne({ email: req.body.email });
-  if (user) return res.status(404).send("User already registered");
+  if (user) return res.status(404).json({ message: "User already registered" });
 
   const { name, email, password, birthDay } = req.body;
 
@@ -64,11 +62,11 @@ router.post("", async (req, res) => {
 
   user = await user.save();
 
-  const jwt = user.generateAuthToken(user._id);
+  const jwtToken = user.generateAuthToken(user._id);
 
   // Remove password and __v from user object
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
-  res.header("x-auth-token", jwt).send(userWithoutPassword);
+  res.header("x-auth-token", jwtToken).json(userWithoutPassword);
 });
 
 module.exports = router;
