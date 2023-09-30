@@ -1,7 +1,8 @@
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-require("dotenv").config();
+const { JWT_PRIVATE_KEY } = require("../config");
+
 const {
   AuthToken,
   validate: validateAuthToken,
@@ -48,7 +49,7 @@ UserSchema.methods.generateAuthToken = function (userId) {
     exp: Math.floor(Date.now() / 1000) + hoursToExpire * 60 * 60, // Expiration time: 12 hours after iat
   };
 
-  const token = jwt.sign(tokenData, process.env.JWT_PRIVATE_KEY);
+  const token = jwt.sign(tokenData, JWT_PRIVATE_KEY);
   const authToken = new AuthToken({ token, userId });
   authToken.save();
   return token;
