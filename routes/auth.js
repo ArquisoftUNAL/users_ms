@@ -34,7 +34,7 @@ router.get("/token", async (req, res) => {
   const token = req.headers["x-auth-token"];
   if (!token)
     return res.status(404).json({ message: "Token not found in header" });
-  if (!(await AuthToken.findOne({ token }))) return res.status(400).json(false);
+  if (!(await AuthToken.findOne({ token }))) return res.status(200).json(false);
   return res.status(200).json(true);
 });
 
