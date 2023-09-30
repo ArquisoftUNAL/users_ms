@@ -3,7 +3,6 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
-const jwt = require("jsonwebtoken");
 
 const auth = require("../middleware/authorization");
 
@@ -38,10 +37,10 @@ router.patch("/me", auth, async (req, res) => {
 router.post("", async (req, res) => {
   // Validate user with Joi and mongoose schema
   const { error } = validate(req.body);
-  if (error) return res.status(404).json({ message: error.details[0].message });
+  if (error) return res.status(400).json({ message: error.details[0].message });
 
   let user = await User.findOne({ email: req.body.email });
-  if (user) return res.status(404).json({ message: "User already registered" });
+  if (user) return res.status(409).json({ message: "User already registered" });
 
   const { name, email, password, birthDay } = req.body;
 
