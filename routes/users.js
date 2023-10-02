@@ -17,6 +17,18 @@ router.get("/me", auth, async (req, res) => {
   res.json(userWithoutPassword);
 });
 
+// Get user by id
+router.get("/:id", async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  // Remove password and __v from user object
+  const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
+  res.json(userWithoutPassword);
+
+});
+
 // Delete current user
 router.delete("/me", auth, async (req, res) => {
   const user = await User.findByIdAndRemove(req.user._id);
