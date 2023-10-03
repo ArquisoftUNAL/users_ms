@@ -19,7 +19,15 @@ router.get("/me", auth, async (req, res) => {
 
 // Get user by id
 router.get("/:id", async (req, res) => {
-  const user = await User.findById(req.params.id);
+  let user;
+
+  try {
+    user = await User.findById(req.params.id);
+  } catch (err) {
+    console.log(err);
+
+    return res.status(400).json({ message: "Invalid user id" });
+  }
 
   if (!user) return res.status(404).json({ message: "User not found" });
 

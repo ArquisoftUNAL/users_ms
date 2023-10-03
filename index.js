@@ -28,8 +28,12 @@ mongoose
   });
 
 app.use(express.json());
+
 app.use("/users", users);
 app.use("/auth", auth);
 
 const port = APP_PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.listen(
+  port,
+  () => console.log(`Listening on port ${port}...`)
+);
