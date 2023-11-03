@@ -3,3 +3,8 @@ node_modules
 # npm package lock files
 package-lock.json
 yarn.lock
+
+# Ignore LDAP configurations
+data/certs/*
+data/slapd/config/*
+data/slapd/database/*

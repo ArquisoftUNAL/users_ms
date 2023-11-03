@@ -9,17 +9,15 @@ const {
   DATABASE_PASSWORD,
   DATABASE_NAME,
   DATABASE_HOST,
-  APP_PORT
+  APP_PORT,
 } = require("./config");
 
 // Connect to mongodb
 mongoose
-  .connect(
-    `mongodb+srv://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}`,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
+  .connect(`mongodb://habitus_users_db:27017/users`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("Connected to db");
   })
@@ -33,7 +31,4 @@ app.use("/users", users);
 app.use("/auth", auth);
 
 const port = APP_PORT || 3000;
-app.listen(
-  port,
-  () => console.log(`Listening on port ${port}...`)
-);
+app.listen(port, () => console.log(`Listening on port ${port}...`));

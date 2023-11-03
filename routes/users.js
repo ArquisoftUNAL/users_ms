@@ -34,7 +34,6 @@ router.get("/:id", async (req, res) => {
   // Remove password and __v from user object
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
   res.json(userWithoutPassword);
-
 });
 
 // Delete current user
@@ -52,6 +51,15 @@ router.patch("/me", auth, async (req, res) => {
   if (!user) return res.status(404).json({ message: "User not found" });
   res.json(user);
 });
+
+const ldap = require("ldapjs");
+const client = ldap.createClient({
+  url: "ldap://habitus_ldap:389",
+});
+
+// User credentials for an admin user with rights to add new users
+const adminDn = "cn=admin,dc=arqsoft,dc=unal,dc=edu,dc=co";
+const adminPassword = "admin";
 
 // Create a new user
 router.post("", async (req, res) => {
@@ -83,9 +91,42 @@ router.post("", async (req, res) => {
 
   const jwtToken = user.generateAuthToken(user._id);
 
+  const newUserDn = `cn=${email},ou=users,dc=arqsoft,dc=unal,dc=edu,dc=co`;
+  const newUser = {
+    cn: email,
+    objectClass: ["organizationalRole", "simpleSecurityObject"],
+    userPassword: password,
+  };
+
+  client.bind(adminDn, adminPassword, function (err) {
+    if (err) {
+      console.error('Error binding to LDAP:', err.message);
+    } else {
+      console.log('Bound as admin');
+  
+      // Add the new user
+      client.add(newUserDn, newUser, function (err) {
+        if (err) {
+          console.error('Error adding entry to LDAP:', err.message);
+        } else {
+          console.log('Added new user');
+        }
+  
+        // Unbind regardless of success or not
+        client.unbind(function (err) {
+          if (err) {
+            console.error('Error unbinding from LDAP:', err.message);
+          } else {
+            console.log('Unbound from LDAP');
+          }
+        });
+      });
+    }
+
   // Remove password and __v from user object
   const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
   res.header("x-auth-token", jwtToken).json(userWithoutPassword);
+});
 });
 
 module.exports = router;
