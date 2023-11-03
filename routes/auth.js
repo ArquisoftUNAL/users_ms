@@ -3,29 +3,54 @@ const { AuthToken } = require("../models/authToken");
 const express = require("express");
 const Joi = require("joi");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
-// Validate login
+const ldap = require("ldapjs");
+const client = ldap.createClient({
+  url: "ldap://habitus_ldap:389",
+});
+
 router.post("/login", async (req, res) => {
   // Structure validation
   const { error } = validate(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
-  let user = await User.findOne({ email: req.body.email });
-  if (!user)
-    return res.status(401).json({ message: "Invalid email or password" });
+  const { email, password } = req.body;
+  console.log("Try to bind user with credentials ", email, password);
 
-  // Compare password
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword)
-    return res.status(401).json({ message: "Invalid email or password" });
+  const userDn = `cn=${email},ou=users,dc=arqsoft,dc=unal,dc=edu,dc=co`;
 
-  // Generate and save token
-  const jwt = user.generateAuthToken(user._id);
+  // Create a new client instance for the request
+  const clientForRequest = ldap.createClient({
+    url: "ldap://habitus_ldap:389", // Replace with your LDAP server address
+  });
 
-  // Send token to client
-  res.header("x-auth-token", jwt).status(200).json({ token: jwt });
+  // Try to bind using provided credentials
+  clientForRequest.bind(userDn, password, async function (err) {
+    // Always unbind after bind, no matter the outcome
+    clientForRequest.unbind();
+
+    if (err) {
+      console.error("Error binding user to LDAP:", err.message);
+      return res
+        .status(401)
+        .json({ message: "Invalid email or password (LDAP)" });
+    }
+
+    console.log("User successfully bound to LDAP");
+
+    let user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "Invalid email or password (DB)" });
+    }
+
+    // Generate and save token
+    const jwtToken = user.generateAuthToken(user._id);
+
+    // Send token to client
+    res.header("x-auth-token", jwtToken).status(200).json({ token: jwtToken });
+  });
 });
 
 // Validate token
