@@ -60,16 +60,18 @@ services:
     networks:
       - my-network
     depends_on:
-      - mongodb
+      # - mongodb
       - habitus_ldap
+    env_file:
+      - .env
+  # mongodb:
+  #   image: mongo:latest
+  #   container_name: habitus_users_db
+  #   ports:
+  #     - "27017:27017"
 
-  mongodb:
-    image: mongo:latest
-    container_name: habitus_users_db
-    ports:
-      - "27017:27017"
-    networks:
-      - my-network
+  #   networks:
+  #     - my-network
 
 networks:
   my-network:

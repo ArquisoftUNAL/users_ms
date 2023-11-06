@@ -5,19 +5,18 @@ const users = require("./routes/users");
 const auth = require("./routes/auth");
 
 const {
-  DATABASE_USER,
-  DATABASE_PASSWORD,
-  DATABASE_NAME,
-  DATABASE_HOST,
+  MONGODB_URL,
   APP_PORT,
 } = require("./config");
 
 // Connect to mongodb
 mongoose
-  .connect(`mongodb://habitus_users_db:27017/users`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    MONGODB_URL,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
   .then(() => {
     console.log("Connected to db");
   })

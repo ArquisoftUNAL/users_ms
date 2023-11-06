@@ -5,9 +5,7 @@ const Joi = require("joi");
 const router = express.Router();
 
 const ldap = require("ldapjs");
-const client = ldap.createClient({
-  url: "ldap://habitus_ldap:389",
-});
+const { LDAP_URL } = require("../config");
 
 router.post("/login", async (req, res) => {
   // Structure validation
@@ -21,7 +19,7 @@ router.post("/login", async (req, res) => {
 
   // Create a new client instance for the request
   const clientForRequest = ldap.createClient({
-    url: "ldap://habitus_ldap:389", // Replace with your LDAP server address
+    url: LDAP_URL, // Replace with your LDAP server address
   });
 
   // Try to bind using provided credentials

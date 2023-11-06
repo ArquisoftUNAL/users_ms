@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
+const { LDAP_URL } = require("./../config")
 
 const auth = require("../middleware/authorization");
 
@@ -54,7 +55,7 @@ router.patch("/me", auth, async (req, res) => {
 
 const ldap = require("ldapjs");
 const client = ldap.createClient({
-  url: "ldap://habitus_ldap:389",
+  url: LDAP_URL,
 });
 
 // User credentials for an admin user with rights to add new users
@@ -103,7 +104,7 @@ router.post("", async (req, res) => {
       console.error('Error binding to LDAP:', err.message);
     } else {
       console.log('Bound as admin');
-  
+
       // Add the new user
       client.add(newUserDn, newUser, function (err) {
         if (err) {
@@ -111,7 +112,7 @@ router.post("", async (req, res) => {
         } else {
           console.log('Added new user');
         }
-  
+
         // Unbind regardless of success or not
         client.unbind(function (err) {
           if (err) {
@@ -123,10 +124,10 @@ router.post("", async (req, res) => {
       });
     }
 
-  // Remove password and __v from user object
-  const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
-  res.header("x-auth-token", jwtToken).json(userWithoutPassword);
-});
+    // Remove password and __v from user object
+    const userWithoutPassword = _.omit(user.toObject(), ["password", "__v"]);
+    res.header("x-auth-token", jwtToken).json(userWithoutPassword);
+  });
 });
 
 module.exports = router;
