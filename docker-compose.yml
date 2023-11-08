@@ -1,36 +1,55 @@
 version: "3"
 
 services:
+  # habitus_ldap:
+  #   image: osixia/openldap:1.1.8
+  #   container_name: habitus_ldap
+  #   environment:
+  #     - COMPOSE_HTTP_TIMEOUT=200
+  #     - LDAP_LOG_LEVEL=256
+  #     - LDAP_ORGANISATION=Software Architecture
+  #     - LDAP_DOMAIN=arqsoft.unal.edu.co
+  #     - LDAP_BASE_DN=dc=arqsoft,dc=unal,dc=edu,dc=co
+  #     - LDAP_ADMIN_PASSWORD=admin
+  #     - LDAP_CONFIG_PASSWORD=config
+  #     - LDAP_READONLY_USER=false
+  #     - LDAP_BACKEND=hdb
+  #     - LDAP_TLS=true
+  #     - LDAP_TLS_CRT_FILENAME=ldap.crt
+  #     - LDAP_TLS_KEY_FILENAME=ldap.key
+  #     - LDAP_TLS_CA_CRT_FILENAME=ca.crt
+  #     - LDAP_TLS_ENFORCE=false
+  #     - LDAP_TLS_CIPHER_SUITE=SECURE256:-VERS-SSL3.0
+  #     - LDAP_TLS_PROTOCOL_MIN=3.1
+  #     - LDAP_TLS_VERIFY_CLIENT=demand
+  #     - LDAP_REPLICATION=false
+  #     - LDAP_REMOVE_CONFIG_AFTER_SETUP=true
+  #     - LDAP_SSL_HELPER_PREFIX=ldap
+  #   tty: true
+  #   stdin_open: true
+  #   volumes:
+  #     - ./data/slapd/database:/var/lib/ldap
+  #     - ./data/slapd/config:/etc/ldap/slapd.d
+  #     - ./data/certs:/container/service/slapd/assets/certs
+  #   ports:
+  #     - "389:389"
+  #     - "636:636"
+  #   networks:
+  #     - my-network
+
   habitus_ldap:
-    image: osixia/openldap:1.1.8
+    build:
+      context: ./ldap
+      dockerfile: Dockerfile
     container_name: habitus_ldap
-    environment:
-      - COMPOSE_HTTP_TIMEOUT=200
-      - LDAP_LOG_LEVEL=256
-      - LDAP_ORGANISATION=Software Architecture
-      - LDAP_DOMAIN=arqsoft.unal.edu.co
-      - LDAP_BASE_DN=dc=arqsoft,dc=unal,dc=edu,dc=co
-      - LDAP_ADMIN_PASSWORD=admin
-      - LDAP_CONFIG_PASSWORD=config
-      - LDAP_READONLY_USER=false
-      - LDAP_BACKEND=hdb
-      - LDAP_TLS=true
-      - LDAP_TLS_CRT_FILENAME=ldap.crt
-      - LDAP_TLS_KEY_FILENAME=ldap.key
-      - LDAP_TLS_CA_CRT_FILENAME=ca.crt
-      - LDAP_TLS_ENFORCE=false
-      - LDAP_TLS_CIPHER_SUITE=SECURE256:-VERS-SSL3.0
-      - LDAP_TLS_PROTOCOL_MIN=3.1
-      - LDAP_TLS_VERIFY_CLIENT=demand
-      - LDAP_REPLICATION=false
-      - LDAP_REMOVE_CONFIG_AFTER_SETUP=true
-      - LDAP_SSL_HELPER_PREFIX=ldap
+    env_file: ./ldap/.env
     tty: true
     stdin_open: true
     volumes:
-      - ./data/slapd/database:/var/lib/ldap
-      - ./data/slapd/config:/etc/ldap/slapd.d
-      - ./data/certs:/container/service/slapd/assets/certs/
+      # - ./ldap/data/slapd/database:/var/lib/ldap
+      # - ./ldap/data/slapd/config:/etc/ldap/slapd.d
+      # - ./ldap/data/certs:/container/service/slapd/assets/certs
+      - ./ldap/LDIF:/container/service/slapd/assets/config/bootstrap/ldif/custom
     ports:
       - "389:389"
       - "636:636"

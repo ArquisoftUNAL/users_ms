@@ -99,6 +99,8 @@ router.post("", async (req, res) => {
     userPassword: password,
   };
 
+  console.log("Entra2");
+
   client.bind(adminDn, adminPassword, function (err) {
     if (err) {
       console.error('Error binding to LDAP:', err.message);

@@ -1,0 +1,3 @@
+dn: ou=users,dc=arqsoft,dc=unal,dc=edu,dc=co
+objectClass: organizationalUnit
+ou: users
